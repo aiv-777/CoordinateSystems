@@ -7,10 +7,10 @@ class CoordinateSystem:
                  ox: np.array,
                  oy: np.array,
                  oz: np.array):
-        self.o = o
-        self.ox = (ox - self.o)/np.linalg.norm(ox - self.o)
-        self.oy = (oy - self.o)/np.linalg.norm(oy - self.o)
-        self.oz = (oz - self.o)/np.linalg.norm(oz - self.o)
+        self.o = o  # Начало новой системы координат О
+        self.ox = (ox - self.o)/np.linalg.norm(ox - self.o)  # Ось Ox
+        self.oy = (oy - self.o)/np.linalg.norm(oy - self.o)  # Ось Oy
+        self.oz = (oz - self.o)/np.linalg.norm(oz - self.o)  # Ось Oz
 
 
 class Dot:
@@ -18,15 +18,18 @@ class Dot:
                  x: float,
                  y: float,
                  z: float):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = x  # Координата x
+        self.y = y  # Координата y
+        self.z = z  # Координата z
 
     @staticmethod
-    def direct_projection(axis, vector):
+    def direct_projection(axis: np.array, vector: np.array):
+        """Находит проекцию точки на новую ось"""
         return np.dot(axis, vector)
 
     def direct_conversion(self, coordinate_system: CoordinateSystem):
+        """Преобразование координат из стартовой ортогональной системы
+        в новую систему"""
         vector = np.array([self.x - coordinate_system.o[0],
                            self.y - coordinate_system.o[1],
                            self.z - coordinate_system.o[2]])
@@ -35,34 +38,23 @@ class Dot:
         self.z = self.direct_projection(coordinate_system.oz, vector)
 
     @staticmethod
-    def right_piece(axis, o, coordinates, i):
-        # res1 = axis*coordinates
-        # print("\nRes 1 = \n", res1)
-        # res2 = res1 + o
-        # print("\nRes 2 = \n", res1)
-        # result = res2*axis
-        # print("gR =", result)
-        # RES = sum((coordinates*(axis + o))*axis)
-        # coefficients = np.array([1,
-        #                          np.dot(axis, o),
-        #                          np.linalg.norm(o)**2 - coordinates[i]**2])
-        # solutions = np.roots(coefficients)
-        # for t in solutions:
-        #     if np.dot():
-        #         return
-        # return RES
+    def right_piece(axis: np.array,
+                    o: np.array,
+                    coordinates: np.array,
+                    i: int):
+        """Находит правую часть уравнения в правой части системы"""
         return np.dot(axis, o) + coordinates[i]
 
     def reverse_conversion(self, coordinate_system: CoordinateSystem):
+        """Преобразование координат из новой системы
+                в стартовую ортогональную систему"""
         coordinates = np.array([self.x,
                                 self.y,
                                 self.z])
-        print("\nCoordinates:\n", coordinates)
 
         left_part = np.array([coordinate_system.ox,
                               coordinate_system.oy,
                               coordinate_system.oz])
-        print("\nLeft part:\n", left_part)
 
         right_part = np.array([self.right_piece(coordinate_system.ox,
                                                 coordinate_system.o,
@@ -73,7 +65,7 @@ class Dot:
                                self.right_piece(coordinate_system.oz,
                                                 coordinate_system.o,
                                                 coordinates, 2)])
-        print("\nRight part:\n", right_part)
+
         solution = np.linalg.solve(left_part, right_part)
         self.x = solution[0]
         self.y = solution[1]

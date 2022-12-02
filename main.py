@@ -35,14 +35,14 @@ class Dot:
         self.z = self.direct_projection(coordinate_system.oz, vector)
 
     @staticmethod
-    def right_piece(axis, o, coordinates):
+    def right_piece(axis, o, coordinates, i):
         # res1 = axis*coordinates
         # print("\nRes 1 = \n", res1)
         # res2 = res1 + o
         # print("\nRes 2 = \n", res1)
         # result = res2*axis
         # print("gR =", result)
-        RES = sum((axis*coordinates + o)*axis)
+        # RES = sum((coordinates*(axis + o))*axis)
         # coefficients = np.array([1,
         #                          np.dot(axis, o),
         #                          np.linalg.norm(o)**2 - coordinates[i]**2])
@@ -50,7 +50,8 @@ class Dot:
         # for t in solutions:
         #     if np.dot():
         #         return
-        return RES
+        # return RES
+        return np.dot(axis, o) + coordinates[i]
 
     def reverse_conversion(self, coordinate_system: CoordinateSystem):
         coordinates = np.array([self.x,
@@ -65,13 +66,13 @@ class Dot:
 
         right_part = np.array([self.right_piece(coordinate_system.ox,
                                                 coordinate_system.o,
-                                                coordinates),
+                                                coordinates, 0),
                                self.right_piece(coordinate_system.oy,
                                                 coordinate_system.o,
-                                                coordinates),
+                                                coordinates, 1),
                                self.right_piece(coordinate_system.oz,
                                                 coordinate_system.o,
-                                                coordinates)])
+                                                coordinates, 2)])
         print("\nRight part:\n", right_part)
         solution = np.linalg.solve(left_part, right_part)
         self.x = solution[0]
